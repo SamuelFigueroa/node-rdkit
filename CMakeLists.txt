@@ -31,9 +31,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # Essential include files to build a node addon,
 # you should add this line in every CMake.js based project.
-include_directories(${CMAKE_JS_INC} "${CMAKE_SOURCE_DIR}/node_modules/node-addon-api")
+include_directories(${CMAKE_JS_INC} "${CMAKE_SOURCE_DIR}/../node-addon-api")
 
-message("CMAKE SOURCE DIR ${CMAKE_SOURCE_DIR}/node_modules/node-addon-api")
 # Declare the source files location
 file(GLOB SOURCE_FILES "src/*.cc" "src/*.h")
 
