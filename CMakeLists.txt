@@ -31,7 +31,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # Essential include files to build a node addon,
 # you should add this line in every CMake.js based project.
-include_directories(${CMAKE_JS_INC})
+include_directories(${CMAKE_JS_INC} "${CMAKE_SOURCE_DIR}/node_modules/node-addon-api")
 
 # Declare the source files location
 file(GLOB SOURCE_FILES "src/*.cc" "src/*.h")
@@ -46,8 +46,12 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
 # Include N-API wrappers
-target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/node_modules/node-addon-api")
+target_include_directories(${PROJECT_NAME}
+    PRIVATE ${CMAKE_JS_INC}
+    PRIVATE "${CMAKE_SOURCE_DIR}/node_modules/node-addon-api")
 
 # Essential library files to link to a node addon,
 # you should add this line in every CMake.js based project.
-target_link_libraries(${PROJECT_NAME} ${LIBS} ${CMAKE_JS_LIB})
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE ${CMAKE_JS_LIB}
+    ${LIBS})
