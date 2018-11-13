@@ -18,7 +18,10 @@ const mol_block = `
   6  1  1  0  0  0
 M  END`;
 
-console.log(rdkit.molBlockToSmiles(mol_block));
+const smiles = rdkit.molBlockToSmiles(mol_block);
+console.log(smiles);
+const molblock = rdkit.smilesToMolBlock(smiles);
+console.log(molblock);
 
 // const mol = rdkit.MolBlockToMol(mol_block);
 //
