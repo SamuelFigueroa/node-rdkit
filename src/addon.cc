@@ -28,9 +28,17 @@ Napi::Value MolBlockToSmiles(const Napi::CallbackInfo& info) {
       return env.Null();
   }
 
-  Napi::String smiles = Napi::String::New(env, RDKit::MolToSmiles(*m, true) );
-
-  return smiles;
+  string smiles = "";
+  if (m != NULL) {
+      try {
+          smiles = RDKit::MolToSmiles(*m, true);
+      } catch (exception &e) {
+          Napi::TypeError::New(env, e.what()).ThrowAsJavaScriptException();
+          return env.Null();
+      }
+  }
+  Napi::String napi_smiles = Napi::String::New(env, smiles);
+  return napi_smiles;
 }
 
 Napi::Value SmilesToMolBlock(const Napi::CallbackInfo& info) {

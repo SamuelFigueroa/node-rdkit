@@ -1,6 +1,6 @@
 const rdkit = require("bindings")("node-rdkit");
 
-const mol_block = `
+const benzene_mol_block = `
      CWRITER311071816342D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
@@ -18,11 +18,23 @@ const mol_block = `
   6  1  1  0  0  0
 M  END`;
 
-const smiles = rdkit.molBlockToSmiles(mol_block);
-console.log(smiles);
-const molblock = rdkit.smilesToMolBlock(smiles);
-console.log(molblock);
+const empty_mol_block = `
+     CWRITER311161812292D
 
-// const mol = rdkit.MolBlockToMol(mol_block);
-//
-// console.log(rdkit.MolToSmiles(mol));
+  0  0  0  0  0  0  0  0  0  0999 V2000
+M  END`;
+
+const benzene_smiles = rdkit.molBlockToSmiles(benzene_mol_block);
+console.log('Benzene: ', benzene_smiles);
+
+const empty_mol_smiles = rdkit.molBlockToSmiles(empty_mol_block);
+console.log('Empty mol: ', empty_mol_smiles);
+
+const empty_string_smiles = rdkit.molBlockToSmiles('');
+console.log('Empty string: ', empty_string_smiles);
+
+const benzene_molblock = rdkit.smilesToMolBlock(benzene_smiles);
+console.log('Benzene Mol Block: ', benzene_molblock);
+
+const empty_molblock = rdkit.smilesToMolBlock('');
+console.log('Empty Mol Block: ', empty_molblock);
