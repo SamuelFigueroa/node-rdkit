@@ -38,3 +38,9 @@ console.log('Benzene Mol Block: ', benzene_molblock);
 
 const empty_molblock = rdkit.smilesToMolBlock('');
 console.log('Empty Mol Block: ', empty_molblock);
+
+const benzene_molwt = rdkit.molWtFromSmiles(benzene_smiles);
+console.log('Mol Wt: ', benzene_molwt);
+
+const empty_molwt = rdkit.molWtFromSmiles('');
+console.log('Empty Mol Wt: ', empty_molwt);
