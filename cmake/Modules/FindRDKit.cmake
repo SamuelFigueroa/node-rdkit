@@ -12,13 +12,19 @@
 set(RDKit_DIR $ENV{RDBASE})
 set(RDKit_INCLUDE_DIR ${RDKit_DIR}/Code)
 set(RDKit_FOUND "RDKit_FOUND")
-
 # libraries, as specified in the COMPONENTS
 foreach(component ${RDKit_FIND_COMPONENTS})
   message( "Looking for RDKit component ${component}" )
-  find_file( RDKit_LIBRARY_${component}
-    libRDKit${component}.dylib
-    PATH ${RDKit_DIR}/build/lib NO_DEFAULT_PATH)
+  if(APPLE)
+      find_file( RDKit_LIBRARY_${component}
+        libRDKit${component}.dylib
+        PATH ${RDKit_DIR}/build/lib NO_DEFAULT_PATH)
+   endif()
+   if (UNIX AND NOT APPLE)
+        find_file( RDKit_LIBRARY_${component}
+          libRDKit${component}.so
+          PATH ${RDKit_DIR}/build/lib NO_DEFAULT_PATH)
+    endif()
   message("RDKit_LIBRARY_${component} : ${RDKit_LIBRARY_${component}}")
   if(${RDKit_LIBRARY_${component}} MATCHES "-NOTFOUND$")
     message(FATAL_ERROR "Didn't find RDKit ${component} library.")
