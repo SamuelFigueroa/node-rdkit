@@ -5,9 +5,6 @@ project (node-rdkit)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-set(BOOST_ROOT $ENV{RDBOOST})
-message("RDBOOST: ${BOOST_ROOT}")
-
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED OFF)
 set(Boost_USE_STATIC_RUNTIME ON)
