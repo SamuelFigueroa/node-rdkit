@@ -33,7 +33,7 @@ Napi::Value MolBlockToSmiles(const Napi::CallbackInfo& info) {
   string smiles = "";
   if (m != nullptr) {
       try {
-          smiles = RDKit::MolToSmiles(*m);
+          smiles = RDKit::MolToSmiles( *m );
       } catch (exception &e) {
           Napi::TypeError::New(env, e.what()).ThrowAsJavaScriptException();
           return env.Null();
@@ -103,6 +103,38 @@ Napi::Value MolWtFromSmiles(const Napi::CallbackInfo& info) {
   Napi::Number mol_wt = Napi::Number::New(env, RDKit::Descriptors::calcAMW(*m) );
 
   return mol_wt;
+}
+
+Napi::Value HasSubstructMatch(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+
+    if (info.Length() < 1) {
+      Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+      return env.Null();
+    }
+
+    if (!info[0].IsString() || !info[1].IsString()) {
+      Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
+      return env.Null();
+    }
+
+    string molecule = info[0].As<Napi::String>();
+    string pattern = info[1].As<Napi::String>();
+    RDKit::ROMOL_SPTR m;
+    RDKit::ROMOL_SPTR patt;
+    try {
+        m = RDKit::ROMOL_SPTR(RDKit::SmilesToMol(molecule));
+        patt = RDKit::ROMOL_SPTR(RDKit::SmilesToMol(pattern));
+    } catch (RDKit::SmilesParseException &e) {
+        Napi::TypeError::New(env, e.message()).ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    RDKit::MatchVectType v;
+
+    Napi::Boolean hasSubstructMatch = Napi::Boolean::New(env, RDKit::SubstructMatch(*m, *patt, v, true, true));
+
+    return hasSubstructMatch;
 }
 
 //RDKit::ROMOL_SPTR _applyPattern(RDKit::ROMOL_SPTR m, RDKit::ROMOL_SPTR salt, bool notEverything) {
@@ -220,6 +252,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
               Napi::Function::New(env, SmilesToMolBlock));
   exports.Set(Napi::String::New(env, "molWtFromSmiles"),
               Napi::Function::New(env, MolWtFromSmiles));
+  exports.Set(Napi::String::New(env, "hasSubstructMatch"),
+              Napi::Function::New(env, HasSubstructMatch));
 //  exports.Set(Napi::String::New(env, "removeSaltsFromSmiles"),
 //              Napi::Function::New(env, RemoveSaltsFromSmiles));
   return exports;
