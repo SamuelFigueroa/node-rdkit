@@ -118,21 +118,28 @@ Napi::Value HasSubstructMatch(const Napi::CallbackInfo& info) {
       return env.Null();
     }
 
+    bool removeHs = info[2].IsUndefined() ? true : info[2].As<Napi::Boolean>();
+
     string molecule = info[0].As<Napi::String>();
     string pattern = info[1].As<Napi::String>();
-    RDKit::ROMOL_SPTR m;
+    RDKit::ROMOL_SPTR mol;
     RDKit::ROMOL_SPTR patt;
     try {
-        m = RDKit::ROMOL_SPTR(RDKit::SmilesToMol(molecule));
-        patt = RDKit::ROMOL_SPTR(RDKit::SmilesToMol(pattern));
+        mol = RDKit::ROMOL_SPTR(RDKit::SmilesToMol( molecule ));
+        mol = RDKit::ROMOL_SPTR(RDKit::MolOps::addHs(*mol));
+        patt = RDKit::ROMOL_SPTR(RDKit::MolBlockToMol(pattern, true, removeHs));
     } catch (RDKit::SmilesParseException &e) {
+        Napi::TypeError::New(env, e.message()).ThrowAsJavaScriptException();
+        return env.Null();
+    } catch (RDKit::FileParseException &e) {
         Napi::TypeError::New(env, e.message()).ThrowAsJavaScriptException();
         return env.Null();
     }
 
+
     RDKit::MatchVectType v;
 
-    Napi::Boolean hasSubstructMatch = Napi::Boolean::New(env, RDKit::SubstructMatch(*m, *patt, v, true, true));
+    Napi::Boolean hasSubstructMatch = Napi::Boolean::New(env, RDKit::SubstructMatch(*mol, *patt, v, true, true));
 
     return hasSubstructMatch;
 }
