@@ -28,6 +28,12 @@ Napi::Value MolBlockToSmiles(const Napi::CallbackInfo& info) {
   } catch (RDKit::FileParseException &e) {
       Napi::TypeError::New(env, e.message()).ThrowAsJavaScriptException();
       return env.Null();
+  } catch (RDKit::MolSanitizeException &e) {
+      Napi::TypeError::New(env, e.message()).ThrowAsJavaScriptException();
+      return env.Null();
+  } catch (exception &e) {
+      Napi::TypeError::New(env, e.what()).ThrowAsJavaScriptException();
+      return env.Null();
   }
 
   string smiles = "";
@@ -63,6 +69,9 @@ Napi::Value SmilesToMolBlock(const Napi::CallbackInfo& info) {
   } catch (RDKit::SmilesParseException &e) {
       Napi::TypeError::New(env, e.message()).ThrowAsJavaScriptException();
       return env.Null();
+  } catch (exception &e) {
+      Napi::TypeError::New(env, e.what()).ThrowAsJavaScriptException();
+      return env.Null();
   }
 
   string molblock = "";
@@ -97,6 +106,9 @@ Napi::Value MolWtFromSmiles(const Napi::CallbackInfo& info) {
       m = RDKit::ROMOL_SPTR(RDKit::SmilesToMol(smiles));
   } catch (RDKit::SmilesParseException &e) {
       Napi::TypeError::New(env, e.message()).ThrowAsJavaScriptException();
+      return env.Null();
+  } catch (exception &e) {
+      Napi::TypeError::New(env, e.what()).ThrowAsJavaScriptException();
       return env.Null();
   }
 
