@@ -143,8 +143,18 @@ Napi::Value HasSubstructMatch(const Napi::CallbackInfo& info) {
     }
 
     RDKit::MatchVectType v;
+    bool match;
+    try {
+        match = RDKit::SubstructMatch(*mol, *patt, v, true, true);
+    } catch (RDKit::MolSanitizeException &e) {
+        Napi::TypeError::New(env, e.message()).ThrowAsJavaScriptException();
+        return env.Null();
+    } catch (exception &e) {
+        Napi::TypeError::New(env, e.what()).ThrowAsJavaScriptException();
+        return env.Null();
+    }
 
-    Napi::Boolean hasSubstructMatch = Napi::Boolean::New(env, RDKit::SubstructMatch(*mol, *patt, v, true, true));
+    Napi::Boolean hasSubstructMatch = Napi::Boolean::New(env, match);
 
     return hasSubstructMatch;
 }
