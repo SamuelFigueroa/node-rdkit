@@ -134,8 +134,13 @@ Napi::Value HasSubstructMatch(const Napi::CallbackInfo& info) {
     } catch (RDKit::FileParseException &e) {
         Napi::TypeError::New(env, e.message()).ThrowAsJavaScriptException();
         return env.Null();
+    } catch (RDKit::MolSanitizeException &e) {
+        Napi::TypeError::New(env, e.message()).ThrowAsJavaScriptException();
+        return env.Null();
+    } catch (exception &e) {
+        Napi::TypeError::New(env, e.what()).ThrowAsJavaScriptException();
+        return env.Null();
     }
-
 
     RDKit::MatchVectType v;
 
