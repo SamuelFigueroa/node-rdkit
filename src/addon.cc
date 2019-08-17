@@ -171,6 +171,44 @@ Napi::Value HasSubstructMatch(const Napi::CallbackInfo& info) {
     return hasSubstructMatch;
 }
 
+Napi::Value SmilesToMolFormula(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+
+  if (info.Length() < 1) {
+    Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  if (!info[0].IsString()) {
+    Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  string smiles = info[0].As<Napi::String>();
+  RDKit::ROMOL_SPTR m;
+  try {
+      m = RDKit::ROMOL_SPTR(RDKit::SmilesToMol(smiles));
+  } catch (RDKit::SmilesParseException &e) {
+      Napi::TypeError::New(env, e.message()).ThrowAsJavaScriptException();
+      return env.Null();
+  } catch (exception &e) {
+      Napi::TypeError::New(env, e.what()).ThrowAsJavaScriptException();
+      return env.Null();
+  }
+
+  string molformula = "";
+  if (m != nullptr) {
+      try {
+          molformula = RDKit::Descriptors::calcMolFormula(*m, true);
+      } catch (exception &e) {
+          Napi::TypeError::New(env, e.what()).ThrowAsJavaScriptException();
+          return env.Null();
+      }
+  }
+  Napi::String napi_molformula = Napi::String::New(env, molformula);
+  return napi_molformula;
+}
+
 //RDKit::ROMOL_SPTR _applyPattern(RDKit::ROMOL_SPTR m, RDKit::ROMOL_SPTR salt, bool notEverything) {
 
 //    unsigned int nAts = m->getNumAtoms();
@@ -288,6 +326,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
               Napi::Function::New(env, MolWtFromSmiles));
   exports.Set(Napi::String::New(env, "hasSubstructMatch"),
               Napi::Function::New(env, HasSubstructMatch));
+  exports.Set(Napi::String::New(env, "smilesToMolFormula"),
+              Napi::Function::New(env, SmilesToMolFormula));
 //  exports.Set(Napi::String::New(env, "removeSaltsFromSmiles"),
 //              Napi::Function::New(env, RemoveSaltsFromSmiles));
   return exports;
